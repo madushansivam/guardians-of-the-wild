@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardians of the Wild — Wildlife Conservation 2026</title>
+
+  <!-- GSAP stack -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/gh/ilja-van-eck/osmo/assets/gsap/InertiaPlugin.min.js"></script>
+
+  <style>
+    /* ── RESET & ROOT ── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --ink: #0A0907;
+      --paper: #F6F4EF;
+      --muted: #8A8778;
+      --rule: rgba(10, 9, 7, 0.11);
+      --green: #4E8A42;
+      --green-d: #316128;
+      --amber: #B87C3A;
+      --cr: #B03525;
+      --en: #A05820;
+      --vu: #887010;
+      --font-display: Georgia, 'Times New Roman', serif;
+      --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 3rem;
+      mix-blend-mode: multiply;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo .leaf {
+      width: 16px;
+      height: 16px;
+      background: var(--green);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-cta {
+      font-size: 0.73rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background: var(--green);
+      color: #fff;
+      padding: 0.45rem 1.1rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--green-d);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO (FORME scroll-expand)
+    ═══════════════════════════════════════════ */
+    #hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 9.5vw, 8.8rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 0.92;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero-title .line-top {
+      display: block;
+    }
+
+    .hero-title .line-bot {
+      display: block;
+      color: var(--green);
+      font-style: italic;
+    }
+
+    .hero-media-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 380px;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .hero-media-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 9, 7, 0.17);
+      transition: opacity 0.3s;
+    }
+
+    .hero-meta {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 3rem;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .hero-meta span {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    .scroll-hint span {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: var(--green);
+      animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+
+      0%,
+      100% {
+        transform: scaleY(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scaleY(0.4);
+        opacity: 0.4;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       STATS STRIP
+    ═══════════════════════════════════════════ */
+    .stats-strip {
+      display: flex;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 3rem;
+    }
+
+    .stat-cell {
+      flex: 1;
+      padding: 2.2rem 0 2.2rem 2.5rem;
+      border-right: 1px solid var(--rule);
+    }
+
+    .stat-cell:first-child {
+      padding-left: 0;
+    }
+
+    .stat-cell:last-child {
+      border-right: none;
+    }
+
+    .stat-cell .n {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--amber);
+      margin-bottom: 4px;
+    }
+
+    .stat-cell .t {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ═══════════════════════════════════════════
+       SHARED LAYOUT HELPERS
+    ═══════════════════════════════════════════ */
+    .section-label {
+      font-size: 0.67rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .section-label.on-dark {
+      color: rgba(246, 244, 239, 0.38);
+    }
+
+    .section-label.on-dark::after {
+      background: rgba(246, 244, 239, 0.12);
+    }
+
+    /* ═══════════════════════════════════════════
+       SPECIES SLIDER SECTION  (Osmo-adapted)
+    ═══════════════════════════════════════════ */
+    #species {
+      background-color: #0d0d0b;
+      /* near-black, Osmo-style */
+      color: #F6F4EF;
+      position: relative;
+    }
+
+    /* Section header sits above the fullscreen slider area */
+    .species-header {
+      padding: 5rem 3rem 3rem;
+    }
+
+    .species-header .section-label {
+      margin-bottom: 0;
+    }
+
+    /* ── Fullscreen slider area (Osmo cloneable, adapted) ── */
+    .species-slider-area {
+      padding: var(--container-padding, 2em);
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      min-height: 520px;
+      display: flex;
+      position: relative;
+      font-size: 1.1vw;
+    }
+
+    /* LEFT OVERLAY — species info panel */
+    .species-overlay {
+      z-index: 2;
+      background-image: linear-gradient(90deg, #0d0d0b 82%, #0000);
+      justify-content: flex-start;
+      align-items: center;
+      width: 38em;
+      height: 100%;
+      padding-left: 2em;
+      display: flex;
+      position: absolute;
+      inset: 0% auto 0% 0%;
+    }
+
+    .species-overlay-inner {
+      flex-flow: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      height: 28em;
+      display: flex;
+    }
+
+    /* Counter row */
+    .overlay-count-row {
+      grid-column-gap: .2em;
+      display: flex;
+      align-items: center;
+      font-family: 'PP Neue Corp', Impact, sans-serif;
+      font-size: 5.625em;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .count-column {
+      height: 1em;
+      overflow: hidden;
+    }
+
+    .count-heading {
+      width: 2ch;
+      font-size: 1em;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .count-row-divider {
+      background-color: #F6F4EF;
+      width: 2px;
+      height: .75em;
+      transform: rotate(15deg);
+      margin: 0 .15em;
+    }
+
+    /* Species info block */
+    .species-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: .6em;
+    }
+
+    .species-status-tag {
+      font-size: .75em;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .25em .7em;
+      border-radius: .3em;
+      display: inline-block;
+      font-family: var(--font-body);
+      font-weight: 500;
+    }
+
+    .tag-cr {
+      background: rgba(176, 53, 37, 0.25);
+      color: #e87a68;
+      border: 1px solid rgba(176, 53, 37, 0.5);
+    }
+
+    .tag-en {
+      background: rgba(160, 88, 32, 0.25);
+      color: #e8a060;
+      border: 1px solid rgba(160, 88, 32, 0.5);
+    }
+
+    .tag-vu {
+      background: rgba(136, 112, 16, 0.25);
+      color: #d4bc58;
+      border: 1px solid rgba(136, 112, 16, 0.5);
+    }
+
+    .species-common-name {
+      font-family: var(--font-display);
+      font-size: 2em;
+      font-weight: 400;
+      line-height: 1.1;
+      color: #F6F4EF;
+      margin: 0;
+    }
+
+    .species-sci-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: .85em;
+      color: rgba(246, 244, 239, 0.45);
+      margin: 0;
+    }
+
+    .species-habitat {
+      font-size: .78em;
+      color: rgba(246, 244, 239, 0.55);
+      margin: 0;
+      max-width: 22em;
+      line-height: 1.6;
+    }
+
+    .species-fact {
+      font-size: .78em;
+      color: rgba(246, 244, 239, 0.75);
+      border-left: 2px solid var(--green);
+      padding-left: .8em;
+      max-width: 22em;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Nav buttons */
+    .overlay-nav-row {
+      grid-column-gap: 2em;
+      display: flex;
+    }
+
+    .button {
+      background-color: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: .4em;
+      justify-content: center;
+      align-items: center;
+      width: 4em;
+      height: 4em;
+      padding: 0;
+      display: flex;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .button-arrow {
+      flex: none;
+      width: 1em;
+      height: .75em;
+    }
+
+    .button-arrow.next {
+      transform: rotate(180deg);
+    }
+
+    .button-overlay {
+      z-index: 2;
+      position: absolute;
+      inset: -1px;
+    }
+
+    .overlay-corner {
+      border-top: 1px solid #F6F4EF;
+      border-left: 1px solid #F6F4EF;
+      border-top-left-radius: .4em;
+      width: 1em;
+      height: 1em;
+      position: absolute;
+    }
+
+    .overlay-corner.top-right {
+      inset: 0% 0% auto auto;
+      transform: rotate(90deg);
+    }
+
+    .overlay-corner.bottom-left {
+      inset: auto auto 0% 0%;
+      transform: rotate(-90deg);
+    }
+
+    .overlay-corner.bottom-right {
+      inset: auto 0% 0% auto;
+      transform: rotate(180deg);
+    }
+
+    .button,
+    .button-overlay {
+      transition: transform 0.475s var(--cubic-default, cubic-bezier(0.77, 0, 0.175, 1)),
+        opacity 0.475s var(--cubic-default, cubic-bezier(0.77, 0, 0.175, 1));
+    }
+
+    .button:hover .button-overlay {
+      transform: scale(1.4);
+    }
+
+    .overlay-nav-row:hover:has(.button:hover) .button {
+      opacity: 0.4;
+    }
+
+    .button:hover {
+      transform: scale(0.85);
+      opacity: 1 !important;
+    }
+
+    /* Main slider track */
+    .slider-main {
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .slider-wrap {
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .slider-list {
+      flex-flow: row;
+      justify-content: flex-start;
+      align-items: stretch;
+      display: flex;
+      position: relative;
+    }
+
+    .slider-slide {
+      flex: none;
+      width: 42.5em;
+      height: 28em;
+      padding-left: 1.25em;
+      padding-right: 1.25em;
+      transition: opacity 0.4s;
+      position: relative;
+    }
+
+    [data-slider="slide"] {
+      opacity: 0.2;
+    }
+
+    [data-slider="slide"].active {
+      opacity: 1;
+    }
+
+    [data-slider="slide"].active .slide-caption {
+      transition-delay: 0.3s;
+    }
+
+    .slide-inner {
+      border-radius: .5em;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Bottom caption pill */
+    .slide-caption {
+      z-index: 2;
+      background-color: #F6F4EF;
+      color: #0A0907;
+      white-space: nowrap;
+      border-radius: .25em;
+      justify-content: flex-start;
+      align-items: center;
+      padding: .4em .75em .4em .5em;
+      display: flex;
+      gap: .4em;
+      position: absolute;
+      top: 1.25em;
+      left: 1.25em;
+      overflow: hidden;
+      transition: transform 0.525s var(--cubic-default, cubic-bezier(0.77, 0, 0.175, 1)),
+        opacity 0.525s var(--cubic-default, cubic-bezier(0.77, 0, 0.175, 1));
+      transition-delay: 0s;
+    }
+
+    html:not(.wf-design-mode) .slide-caption {
+      opacity: 0;
+      transform: translate(-25%, 0);
+    }
+
+    html:not(.wf-design-mode) [data-slider="slide"].active .slide-caption {
+      opacity: 1;
+      transform: translate(0%, 0);
+    }
+
+    .caption-dot {
+      background-color: #0A0907;
+      border-radius: 10em;
+      flex: none;
+      width: .5em;
+      height: .5em;
+    }
+
+    .caption {
+      font-size: .72em;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    /* Thin colour bar at bottom of each slide indicating status */
+    .slide-status-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 0 0 .5em .5em;
+    }
+
+    .bar-cr {
+      background: var(--cr);
+    }
+
+    .bar-en {
+      background: var(--en);
+    }
+
+    .bar-vu {
+      background: var(--vu);
+    }
+
+    /* hint text bottom right */
+    .slider-hint {
+      position: absolute;
+      bottom: 1.5em;
+      right: 2em;
+      z-index: 3;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(246, 244, 239, 0.3);
+      pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════════════
+       MARQUEE
+    ═══════════════════════════════════════════ */
+    .marquee-section {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      overflow: hidden;
+      white-space: nowrap;
+      background: var(--paper);
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      animation: marquee 26s linear infinite;
+    }
+
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.4rem;
+      padding: 0 2rem;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .marquee-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       SRI LANKA SECTION
+    ═══════════════════════════════════════════ */
+    #srilanka {
+      padding: 7rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .sl-img-wrap {
+      position: relative;
+    }
+
+    .sl-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sl-caption {
+      position: absolute;
+      bottom: 1.2rem;
+      right: -1.5rem;
+      background: var(--paper);
+      padding: 0.8rem 1.2rem;
+      border: 1px solid var(--rule);
+    }
+
+    .sl-caption span {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sl-caption strong {
+      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-weight: 400;
+    }
+
+    .sl-content h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .sl-content p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 0.93rem;
+      line-height: 1.8;
+    }
+
+    .sl-species-list {
+      list-style: none;
+      margin-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .sl-species-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.88rem;
+    }
+
+    .sl-sname {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sl-sname .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-cr {
+      background: var(--cr);
+    }
+
+    .dot-en {
+      background: var(--en);
+    }
+
+    .dot-vu {
+      background: var(--vu);
+    }
+
+    .sl-sstatus {
+      font-size: 0.67rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ═══════════════════════════════════════════
+       THREATS (dark)
+    ═══════════════════════════════════════════ */
+    #threats {
+      padding: 7rem 3rem;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .threats-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .threats-headline {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 3.8vw, 3.3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--paper);
+    }
+
+    .threats-headline em {
+      font-style: italic;
+      color: var(--green);
+    }
+
+    .threats-list {
+      list-style: none;
+      border-top: 1px solid rgba(246, 244, 239, 0.1);
+    }
+
+    .threats-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(246, 244, 239, 0.1);
+    }
+
+    .thr-name {
+      font-size: 0.97rem;
+      color: var(--paper);
+    }
+
+    .thr-num {
+      font-size: 0.67rem;
+      color: rgba(246, 244, 239, 0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* ═══════════════════════════════════════════
+       WINS
+    ═══════════════════════════════════════════ */
+    #wins {
+      padding: 7rem 3rem;
+    }
+
+    .wins-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .win-card {
+      padding: 2rem 0;
+      border-top: 2px solid var(--green);
+    }
+
+    .win-num {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .win-card h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 0.6rem;
+    }
+
+    .win-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════════════════
+       DONATE CTA
+    ═══════════════════════════════════════════ */
+    #donate {
+      padding: 8rem 3rem;
+      text-align: center;
+    }
+
+    .donate-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .donate-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 7vw, 6.5rem);
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .donate-sub {
+      font-size: 0.87rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 3rem;
+    }
+
+    .donate-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-fill {
+      font-size: 0.75rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background: var(--green);
+      color: #fff;
+      padding: 0.85rem 2.2rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+
+    .btn-fill:hover {
+      background: var(--green-d);
+    }
+
+    .btn-stroke {
+      font-size: 0.75rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--ink);
+      padding: 0.85rem 2.2rem;
+      border: 1px solid rgba(10, 9, 7, 0.25);
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s;
+      display: inline-block;
+    }
+
+    .btn-stroke:hover {
+      border-color: var(--ink);
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-size: 0.71rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.71rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      nav {
+        padding: 1.2rem 1.5rem;
+      }
+
+      .nav-links,
+      .nav-cta {
+        display: none;
+      }
+
+      .species-header,
+      #threats,
+      #wins,
+      #donate {
+        padding: 4rem 1.5rem;
+      }
+
+      #srilanka {
+        padding: 4rem 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .sl-caption {
+        right: 0;
+      }
+
+      .threats-layout {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .wins-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stats-strip {
+        flex-wrap: wrap;
+        padding: 0 1.5rem;
+      }
+
+      .stat-cell {
+        padding: 1.5rem 0 1.5rem 1.5rem;
+        border-right: none;
+        border-bottom: 1px solid var(--rule);
+        flex: 0 0 50%;
+      }
+
+      .stat-cell:nth-child(odd) {
+        padding-left: 0;
+      }
+
+      .hero-meta {
+        padding: 0 1.5rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 13vw, 5rem);
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .species-slider-area {
+        font-size: 1.6vw;
+        height: 70vh;
+      }
+
+      .species-overlay {
+        width: 32em;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .wins-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-cell {
+        flex: 0 0 100%;
+      }
+
+      .species-slider-area {
+        font-size: 2.5vw;
+      }
+
+      .species-overlay {
+        display: none;
+      }
+    }
+
+    @font-face {
+      font-family: 'PP Neue Corp';
+      src: url('https://cdn.prod.website-files.com/6717aac16c9ea22eeef1e79e/6717de2d56e40b921572d2d9_PPNeueCorp-TightUltrabold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════ NAV ══════════════════════════ -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="leaf"></div>GUARDIANS
+    </a>
+    <ul class="nav-links">
+      <li><a href="#species">Species</a></li>
+      <li><a href="#srilanka">Sri Lanka</a></li>
+      <li><a href="#wins">Wins</a></li>
+      <li><a href="#donate">Donate</a></li>
+    </ul>
+    <a href="#donate" class="nav-cta">Donate Now</a>
+  </nav>
+
+  <!-- ══════════════════════════ HERO ══════════════════════════ -->
+  <section id="hero">
+    <div class="hero-media-wrap" id="heroMedia">
+      <img src="https://images.unsplash.com/photo-1518715303843-586e350430d0?w=1400&auto=format&fit=crop&q=80"
+        alt="Sri Lankan Leopard" />
+      <div class="hero-overlay" id="heroOverlay"></div>
+    </div>
+    <h1 class="hero-title" id="heroTitle">
+      <span class="line-top" id="lineTop">Guardians</span>
+      <span class="line-bot" id="lineBot">of the Wild</span>
+    </h1>
+    <div class="hero-meta">
+      <span>2026 Conservation Report</span>
+      <span>Species · Habitats · Action</span>
+    </div>
+    <div class="scroll-hint" id="scrollHint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ STATS ══════════════════════════ -->
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="n">47,000+</div>
+      <div class="t">Species Threatened</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">28%</div>
+      <div class="t">Of All Assessed Species</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">68%</div>
+      <div class="t">Wildlife Decline Since 1970</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">150–200</div>
+      <div class="t">Species Lost Every Day</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ SPECIES SLIDER ══════════════════════════ -->
+  <section id="species">
+    <div class="species-header">
+      <div class="section-label on-dark">Endangered Species</div>
+    </div>
+
+    <div class="species-slider-area">
+
+      <!-- LEFT OVERLAY: info panel -->
+      <div class="species-overlay">
+        <div class="species-overlay-inner">
+
+          <!-- Counter -->
+          <div class="overlay-count-row">
+            <div class="count-column">
+              <h2 data-slide-count="step" class="count-heading">01</h2>
+            </div>
+            <div class="count-row-divider"></div>
+            <div class="count-column">
+              <h2 data-slide-count="total" class="count-heading">10</h2>
+            </div>
+          </div>
+
+          <!-- Species info (updated by JS) -->
+          <div class="species-info-block" id="speciesInfo">
+            <span class="species-status-tag tag-en" id="speciesTag">Endangered</span>
+            <p class="species-common-name" id="speciesName">Sri Lankan Leopard</p>
+            <p class="species-sci-name" id="speciesSci">Panthera pardus kotiya</p>
+            <p class="species-habitat" id="speciesHabitat">Yala, Wilpattu & highland forests · Sri Lanka</p>
+            <p class="species-fact" id="speciesFact">Sri Lanka has the highest leopard density in the world. It is the
+              island's apex predator — no lions or tigers compete with it here.</p>
+          </div>
+
+          <!-- Prev / Next -->
+          <div class="overlay-nav-row">
+            <button aria-label="previous slide" data-slider="button-prev" class="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 17 12" fill="none" class="button-arrow">
+                <path
+                  d="M6.28871 12L7.53907 10.9111L3.48697 6.77778H16.5V5.22222H3.48697L7.53907 1.08889L6.28871 0L0.5 6L6.28871 12Z"
+                  fill="currentColor" />
+              </svg>
+              <div class="button-overlay">
+                <div class="overlay-corner"></div>
+                <div class="overlay-corner top-right"></div>
+                <div class="overlay-corner bottom-left"></div>
+                <div class="overlay-corner bottom-right"></div>
+              </div>
+            </button>
+            <button aria-label="next slide" data-slider="button-next" class="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 17 12" fill="none"
+                class="button-arrow next">
+                <path
+                  d="M6.28871 12L7.53907 10.9111L3.48697 6.77778H16.5V5.22222H3.48697L7.53907 1.08889L6.28871 0L0.5 6L6.28871 12Z"
+                  fill="currentColor" />
+              </svg>
+              <div class="button-overlay">
+                <div class="overlay-corner"></div>
+                <div class="overlay-corner top-right"></div>
+                <div class="overlay-corner bottom-left"></div>
+                <div class="overlay-corner bottom-right"></div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div><!-- /species-overlay -->
+
+      <!-- SLIDE TRACK -->
+      <div class="slider-main">
+        <div class="slider-wrap">
+          <div data-slider="list" class="slider-list">
+
+            <!-- 1: Sri Lankan Leopard -->
+            <div data-slider="slide" class="slider-slide active">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1518715303843-586e350430d0?w=900&auto=format&fit=crop&q=80"
+                  alt="Sri Lankan Leopard" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Sri Lankan Leopard</p>
+                </div>
+                <div class="slide-status-bar bar-en"></div>
+              </div>
+            </div>
+
+            <!-- 2: Sri Lankan Elephant -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?w=900&auto=format&fit=crop&q=80"
+                  alt="Sri Lankan Elephant" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Sri Lankan Elephant</p>
+                </div>
+                <div class="slide-status-bar bar-en"></div>
+              </div>
+            </div>
+
+            <!-- 3: Hawksbill Sea Turtle -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=900&auto=format&fit=crop&q=80"
+                  alt="Hawksbill Sea Turtle" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Hawksbill Sea Turtle</p>
+                </div>
+                <div class="slide-status-bar bar-cr"></div>
+              </div>
+            </div>
+
+            <!-- 4: African Forest Elephant -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1504173010664-32509107de8f?w=900&auto=format&fit=crop&q=80"
+                  alt="African Forest Elephant" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">African Forest Elephant</p>
+                </div>
+                <div class="slide-status-bar bar-cr"></div>
+              </div>
+            </div>
+
+            <!-- 5: Purple-Faced Langur -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=900&auto=format&fit=crop&q=80"
+                  alt="Purple-Faced Langur" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Purple-Faced Langur</p>
+                </div>
+                <div class="slide-status-bar bar-en"></div>
+              </div>
+            </div>
+
+            <!-- 6: Javan Rhinoceros -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&auto=format&fit=crop&q=80"
+                  alt="Javan Rhinoceros" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Javan Rhinoceros</p>
+                </div>
+                <div class="slide-status-bar bar-cr"></div>
+              </div>
+            </div>
+
+            <!-- 7: African Penguin -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=900&auto=format&fit=crop&q=80"
+                  alt="African Penguin" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">African Penguin</p>
+                </div>
+                <div class="slide-status-bar bar-cr"></div>
+              </div>
+            </div>
+
+            <!-- 8: Clouded Leopard -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&auto=format&fit=crop&q=80"
+                  alt="Clouded Leopard" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Clouded Leopard</p>
+                </div>
+                <div class="slide-status-bar bar-vu"></div>
+              </div>
+            </div>
+
+            <!-- 9: Przewalski's Horse -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1484406566174-9da000fda645?w=900&auto=format&fit=crop&q=80"
+                  alt="Przewalski's Horse" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Przewalski's Horse</p>
+                </div>
+                <div class="slide-status-bar bar-en"></div>
+              </div>
+            </div>
+
+            <!-- 10: Pangolin -->
+            <div data-slider="slide" class="slider-slide">
+              <div class="slide-inner">
+                <img src="https://images.unsplash.com/photo-1611810000500-e985fad7cff4?w=900&auto=format&fit=crop&q=80"
+                  alt="Pangolin" loading="lazy" />
+                <div class="slide-caption">
+                  <div class="caption-dot"></div>
+                  <p class="caption">Temminck's Pangolin</p>
+                </div>
+                <div class="slide-status-bar bar-vu"></div>
+              </div>
+            </div>
+
+          </div><!-- /slider-list -->
+        </div>
+      </div><!-- /slider-main -->
+
+      <div class="slider-hint">Drag to explore</div>
+
+    </div><!-- /species-slider-area -->
+  </section>
+
+  <!-- ══════════════════════════ MARQUEE ══════════════════════════ -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>Sri Lankan Leopard</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Dumbara Agama</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Purple-Faced Langur</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Serendib Scops Owl</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Hawksbill Sea Turtle</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Javan Rhinoceros</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>African Penguin</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Clouded Leopard</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Temminck's Pangolin</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Sri Lankan Leopard</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Dumbara Agama</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Purple-Faced Langur</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Serendib Scops Owl</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Hawksbill Sea Turtle</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Javan Rhinoceros</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>African Penguin</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Clouded Leopard</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Temminck's Pangolin</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ SRI LANKA ══════════════════════════ -->
+  <section id="srilanka">
+    <div class="sl-img-wrap">
+      <img class="sl-img"
+        src="https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?w=900&auto=format&fit=crop&q=80"
+        alt="Sri Lankan elephant" />
+      <div class="sl-caption">
+        <span>Endemic Species</span>
+        <strong>🇱🇰 26%</strong>
+      </div>
+    </div>
+    <div class="sl-content">
+      <div class="section-label">Sri Lanka Focus</div>
+      <h2>A hotspot on<br>the edge.</h2>
+      <p>Sri Lanka is among the world's top 36 biodiversity hotspots. Over 26% of its mammal species and 33% of
+        flowering plants exist nowhere else on Earth. When they vanish here, they vanish forever.</p>
+      <p>The island faces a perfect storm — deforestation, rapid urbanisation, human-wildlife conflict, and an illegal
+        exotic pet trade that targets the rarest of the rare.</p>
+      <ul class="sl-species-list">
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-en"></div>Sri Lankan Leopard
+          </div><span class="sl-sstatus">Endangered — ~850 left</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-en"></div>Sri Lankan Elephant
+          </div><span class="sl-sstatus">Endangered — 300+ die annually</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-cr"></div>Dumbara Agama
+          </div><span class="sl-sstatus">Critically Endangered</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-cr"></div>Hawksbill Sea Turtle
+          </div><span class="sl-sstatus">Critically Endangered</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-en"></div>Purple-Faced Langur
+          </div><span class="sl-sstatus">Endangered — Top 25 Primates</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-en"></div>Serendib Scops Owl
+          </div><span class="sl-sstatus">Endangered — Discovered 2001</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-vu"></div>Sri Lankan Sloth Bear
+          </div><span class="sl-sstatus">Vulnerable — &lt;1,000 left</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-vu"></div>Sri Lanka Junglefowl
+          </div><span class="sl-sstatus">Vulnerable — National Bird</span>
+        </li>
+        <li>
+          <div class="sl-sname">
+            <div class="dot dot-en"></div>Endemic Tree Frogs
+          </div><span class="sl-sstatus">Multiple spp. Endangered</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ THREATS ══════════════════════════ -->
+  <section id="threats">
+    <div class="section-label on-dark">The Crisis</div>
+    <div class="threats-layout">
+      <div>
+        <h2 class="threats-headline">
+          Nature does not<br>negotiate.<br><em>It simply<br>disappears.</em>
+        </h2>
+      </div>
+      <div>
+        <ul class="threats-list">
+          <li><span class="thr-name">Deforestation & Habitat Loss</span><span class="thr-num">01</span></li>
+          <li><span class="thr-name">Illegal Wildlife Trade & Poaching</span><span class="thr-num">02</span></li>
+          <li><span class="thr-name">Climate Change & Sea Level Rise</span><span class="thr-num">03</span></li>
+          <li><span class="thr-name">Plastic Pollution & Ocean Waste</span><span class="thr-num">04</span></li>
+          <li><span class="thr-name">Human-Wildlife Conflict</span><span class="thr-num">05</span></li>
+          <li><span class="thr-name">Industrial Overfishing & Bycatch</span><span class="thr-num">06</span></li>
+          <li><span class="thr-name">Invasive Species & Disease</span><span class="thr-num">07</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ WINS ══════════════════════════ -->
+  <section id="wins">
+    <div class="section-label">Conservation Wins</div>
+    <div class="wins-grid">
+      <div class="win-card">
+        <div class="win-num">3×</div>
+        <h3>Project Tiger — India</h3>
+        <p>Wild tiger population tripled since 1973, from 1,800 to over 3,600. Proof that political will and funding
+          deliver measurable results.</p>
+      </div>
+      <div class="win-card">
+        <div class="win-num">+71%</div>
+        <h3>Mountain Gorillas</h3>
+        <p>Population grew from ~620 in the 1980s to 1,063 today. Community conservation revenue sharing changed
+          everything.</p>
+      </div>
+      <div class="win-card">
+        <div class="win-num">247</div>
+        <h3>Kakapo Recovery</h3>
+        <p>From 51 individuals in 1995 to 247 in 2024. New Zealand's flightless parrot is coming back — one breeding
+          season at a time.</p>
+      </div>
+      <div class="win-card">
+        <div class="win-num">↓ Low</div>
+        <h3>Rhino Poaching 2025</h3>
+        <p>African white rhino poaching hit its lowest rate since 2011, driven by satellite tracking and community-led
+          anti-poaching units.</p>
+      </div>
+      <div class="win-card">
+        <div class="win-num">+28%</div>
+        <h3>Green Sea Turtles</h3>
+        <p>Global population up 28% vs 1980s baselines. Beach protection across 80+ countries is working.</p>
+      </div>
+      <div class="win-card">
+        <div class="win-num">76</div>
+        <h3>Javan Rhino Count</h3>
+        <p>From ~50 in 2011 to 76 in 2025 — entirely due to dedicated on-the-ground protection in one national park.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ DONATE ══════════════════════════ -->
+  <section id="donate">
+    <div class="donate-eyebrow">Take action today</div>
+    <h2 class="donate-headline">Every species<br>deserves a future.</h2>
+    <p class="donate-sub">Extinction is a choice we make by being indifferent. Choose differently.</p>
+    <div class="donate-btns">
+      <a href="https://www.wwf.org/donate" class="btn-fill" target="_blank">Donate to WWF</a>
+      <a href="https://www.wnpssl.org" class="btn-stroke" target="_blank">Support WNPS Sri Lanka</a>
+      <a href="https://www.iucnredlist.org" class="btn-stroke" target="_blank">IUCN Red List</a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+  <footer>
+    <span>© 2026 Guardians of the Wild — Conservation Awareness Report</span>
+    <ul class="footer-links">
+      <li><a href="#">IUCN</a></li>
+      <li><a href="#">WWF</a></li>
+      <li><a href="#">WNPS Sri Lanka</a></li>
+      <li><a href="#">WWCT</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    /* ════════════════════════════════════════════════
+       SPECIES DATA — one entry per slide (0-indexed)
+    ════════════════════════════════════════════════ */
+    const SPECIES = [
+      {
+        name: "Sri Lankan Leopard",
+        sci: "Panthera pardus kotiya",
+        status: "Endangered",
+        tagCls: "tag-en",
+        habitat: "Yala, Wilpattu & highland forests · Sri Lanka",
+        fact: "Sri Lanka has the highest leopard density in the world. It is the island's sole apex predator — no lions or tigers compete with it here."
+      },
+      {
+        name: "Sri Lankan Elephant",
+        sci: "Elephas maximus maximus",
+        status: "Endangered",
+        tagCls: "tag-en",
+        habitat: "Dry zone forests — Udawalawe, Minneriya, Kaudulla · Sri Lanka",
+        fact: "Over 300 elephants die every year due to human-elephant conflict — shot, poisoned, or killed by jaw bombs hidden in food."
+      },
+      {
+        name: "Hawksbill Sea Turtle",
+        sci: "Eretmochelys imbricata",
+        status: "Critically Endangered",
+        tagCls: "tag-cr",
+        habitat: "Coastal waters & nesting beaches worldwide · Rekawa, Kosgoda (Sri Lanka)",
+        fact: "Their population has declined by over 80% in the last century, driven entirely by demand for 'tortoiseshell' luxury goods."
+      },
+      {
+        name: "African Forest Elephant",
+        sci: "Loxodonta cyclotis",
+        status: "Critically Endangered",
+        tagCls: "tag-cr",
+        habitat: "Tropical forests of Central & West Africa",
+        fact: "Dubbed the 'megagardener of the forest' — many tree species rely solely on elephants to disperse their large seeds."
+      },
+      {
+        name: "Purple-Faced Langur",
+        sci: "Semnopithecus vetulus",
+        status: "Endangered",
+        tagCls: "tag-en",
+        habitat: "Wet zone rainforests & suburban gardens · Sri Lanka",
+        fact: "Listed among the 25 most endangered primates on Earth, yet somehow adapted to surviving in suburban Colombo."
+      },
+      {
+        name: "Javan Rhinoceros",
+        sci: "Rhinoceros sondaicus",
+        status: "Critically Endangered",
+        tagCls: "tag-cr",
+        habitat: "Ujung Kulon National Park, Java · Indonesia — and nowhere else",
+        fact: "All 76 individuals on Earth live in a single park adjacent to an active volcano. One disease outbreak and the species is gone."
+      },
+      {
+        name: "African Penguin",
+        sci: "Spheniscus demersus",
+        status: "Critically Endangered",
+        tagCls: "tag-cr",
+        habitat: "Coastal waters & islands of South Africa and Namibia",
+        fact: "Africa's only penguin could be extinct in the wild by 2035 without intervention. Industrial fishing has wiped out their food supply."
+      },
+      {
+        name: "Clouded Leopard",
+        sci: "Neofelis nebulosa",
+        status: "Vulnerable",
+        tagCls: "tag-vu",
+        habitat: "Himalayan foothills through Southeast Asia",
+        fact: "Has the largest canine teeth relative to body size of any living cat — a living echo of the ancient saber-toothed tigers."
+      },
+      {
+        name: "Przewalski's Horse",
+        sci: "Equus ferus przewalskii",
+        status: "Endangered",
+        tagCls: "tag-en",
+        habitat: "Steppes of Mongolia and Kazakhstan",
+        fact: "The only truly 'wild' horse on Earth. Every mustang, brumby, and camargue horse is feral — descended from domesticated stock."
+      },
+      {
+        name: "Temminck's Pangolin",
+        sci: "Smutsia temminckii",
+        status: "Vulnerable",
+        tagCls: "tag-vu",
+        habitat: "Savannahs & woodlands of Southern and Eastern Africa",
+        fact: "The world's most trafficked wild mammal. Its scales are pure keratin — identical to human fingernails — yet worth more than cocaine by weight."
+      }
+    ];
+
+    /* ════════════════════════════════════════════════
+       HERO scroll-expand (FORME logic)
+    ════════════════════════════════════════════════ */
+    const heroMedia = document.getElementById('heroMedia');
+    const heroOverlay = document.getElementById('heroOverlay');
+    const lineTop = document.getElementById('lineTop');
+    const lineBot = document.getElementById('lineBot');
+    const scrollHint = document.getElementById('scrollHint');
+    let progress = 0, expanded = false, tStartY = 0;
+    const isMobile = () => window.innerWidth < 768;
+
+    function applyProgress(p) {
+      const mobile = isMobile();
+      const maxW = mobile ? 900 : 1600, maxH = mobile ? 600 : 900;
+      const w = 280 + p * (maxW - 280), h = 380 + p * (maxH - 380);
+      const shift = p * (mobile ? 15 : 13);
+      heroMedia.style.width = Math.min(w, window.innerWidth * 0.98) + 'px';
+      heroMedia.style.height = Math.min(h, window.innerHeight * 0.95) + 'px';
+      heroOverlay.style.opacity = Math.max(0, 0.17 - p * 0.17);
+      lineTop.style.transform = `translateX(-${shift}vw)`;
+      lineBot.style.transform = `translateX(${shift}vw)`;
+      scrollHint.style.opacity = Math.max(0, 1 - p * 4);
+    }
+
+    function handleWheel(e) {
+      if (expanded && e.deltaY < 0 && window.scrollY <= 5) { expanded = false; e.preventDefault(); return; }
+      if (!expanded) {
+        e.preventDefault();
+        progress = Math.min(Math.max(progress + e.deltaY * 0.0008, 0), 1);
+        applyProgress(progress);
+        if (progress >= 1) expanded = true;
+      }
+    }
+    function handleTouchStart(e) { tStartY = e.touches[0].clientY; }
+    function handleTouchMove(e) {
+      if (!tStartY) return;
+      const deltaY = tStartY - e.touches[0].clientY;
+      if (expanded && deltaY < -20 && window.scrollY <= 5) { expanded = false; e.preventDefault(); return; }
+      if (!expanded) {
+        e.preventDefault();
+        progress = Math.min(Math.max(progress + deltaY * (deltaY < 0 ? 0.007 : 0.005), 0), 1);
+        applyProgress(progress);
+        if (progress >= 1) expanded = true;
+        tStartY = e.touches[0].clientY;
+      }
+    }
+    function handleTouchEnd() { tStartY = 0; }
+    function handleScroll() { if (!expanded) window.scrollTo(0, 0); }
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    /* ════════════════════════════════════════════════
+       UPDATE SPECIES INFO PANEL
+    ════════════════════════════════════════════════ */
+    function updateSpeciesPanel(index) {
+      const s = SPECIES[index];
+      if (!s) return;
+
+      const tag = document.getElementById('speciesTag');
+      const name = document.getElementById('speciesName');
+      const sci = document.getElementById('speciesSci');
+      const habitat = document.getElementById('speciesHabitat');
+      const fact = document.getElementById('speciesFact');
+
+      // Fade out
+      const block = document.getElementById('speciesInfo');
+      block.style.opacity = '0';
+      block.style.transform = 'translateY(8px)';
+      block.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+
+      setTimeout(() => {
+        tag.textContent = s.status;
+        tag.className = `species-status-tag ${s.tagCls}`;
+        name.textContent = s.name;
+        sci.textContent = s.sci;
+        habitat.textContent = s.habitat;
+        fact.textContent = s.fact;
+
+        // Fade in
+        block.style.opacity = '1';
+        block.style.transform = 'translateY(0)';
+      }, 220);
+    }
+
+    /* ════════════════════════════════════════════════
+       GSAP SLIDER (Osmo horizontalLoop — your main.js)
+    ════════════════════════════════════════════════ */
+    document.addEventListener("DOMContentLoaded", () => {
+
+      gsap.registerPlugin(Draggable, InertiaPlugin);
+
+      function initSlider() {
+        const wrapper = document.querySelector('[data-slider="list"]');
+        const slides = gsap.utils.toArray('[data-slider="slide"]');
+        const nextButton = document.querySelector('[data-slider="button-next"]');
+        const prevButton = document.querySelector('[data-slider="button-prev"]');
+        const totalEl = document.querySelector('[data-slide-count="total"]');
+        const stepEl = document.querySelector('[data-slide-count="step"]');
+        const stepsParent = stepEl.parentElement;
+
+        let activeElement;
+        const totalSlides = slides.length;
+        totalEl.textContent = totalSlides < 10 ? `0${totalSlides}` : totalSlides;
+
+        stepsParent.innerHTML = '';
+        slides.forEach((_, i) => {
+          const clone = stepEl.cloneNode(true);
+          clone.textContent = i + 1 < 10 ? `0${i + 1}` : i + 1;
+          stepsParent.appendChild(clone);
+        });
+        const allSteps = stepsParent.querySelectorAll('[data-slide-count="step"]');
+
+        const loop = horizontalLoop(slides, {
+          paused: true,
+          draggable: true,
+          center: false,
+          onChange: (element, index) => {
+            activeElement && activeElement.classList.remove("active");
+            const next = element.nextElementSibling || slides[0];
+            next.classList.add("active");
+            activeElement = next;
+            gsap.to(allSteps, { y: `${-100 * index}%`, ease: "power3", duration: 0.45 });
+
+            // Find which slide is active and update info panel
+            const activeIdx = slides.indexOf(next);
+            if (activeIdx >= 0) updateSpeciesPanel(activeIdx);
+          }
+        });
+
+        slides.forEach((slide, i) =>
+          slide.addEventListener("click", () => loop.toIndex(i - 1, { ease: "power3", duration: 0.725 }))
+        );
+        nextButton.addEventListener("click", () => loop.next({ ease: "power3", duration: 0.725 }));
+        prevButton.addEventListener("click", () => loop.previous({ ease: "power3", duration: 0.725 }));
+      }
+
+      /* ── horizontalLoop (your main.js, unmodified) ── */
+      function horizontalLoop(items, config) {
+        let timeline;
+        items = gsap.utils.toArray(items);
+        config = config || {};
+        gsap.context(() => {
+          let onChange = config.onChange, lastIndex = 0,
+            tl = gsap.timeline({
+              repeat: config.repeat, onUpdate: onChange && function () {
+                let i = tl.closestIndex();
+                if (lastIndex !== i) { lastIndex = i; onChange(items[i], i); }
+              }, paused: config.paused, defaults: { ease: "none" },
+              onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100)
+            }),
+            length = items.length, startX = items[0].offsetLeft,
+            times = [], widths = [], spaceBefore = [], xPercents = [],
+            curIndex = 0, indexIsDirty = false, center = config.center,
+            pixelsPerSecond = (config.speed || 1) * 100,
+            snap = config.snap === false ? v => v : gsap.utils.snap(config.snap || 1),
+            timeOffset = 0,
+            container = center === true ? items[0].parentNode : gsap.utils.toArray(center)[0] || items[0].parentNode,
+            totalWidth,
+            getTotalWidth = () => items[length - 1].offsetLeft + xPercents[length - 1] / 100 * widths[length - 1] - startX + spaceBefore[0] + items[length - 1].offsetWidth * gsap.getProperty(items[length - 1], "scaleX") + (parseFloat(config.paddingRight) || 0),
+            populateWidths = () => {
+              let b1 = container.getBoundingClientRect(), b2;
+              items.forEach((el, i) => {
+                widths[i] = parseFloat(gsap.getProperty(el, "width", "px"));
+                xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px")) / widths[i] * 100 + gsap.getProperty(el, "xPercent"));
+                b2 = el.getBoundingClientRect(); spaceBefore[i] = b2.left - (i ? b1.right : b1.left); b1 = b2;
+              });
+              gsap.set(items, { xPercent: i => xPercents[i] });
+              totalWidth = getTotalWidth();
+            },
+            timeWrap,
+            populateOffsets = () => {
+              timeOffset = center ? tl.duration() * (container.offsetWidth / 2) / totalWidth : 0;
+              center && times.forEach((t, i) => { times[i] = timeWrap(tl.labels["label" + i] + tl.duration() * widths[i] / 2 / totalWidth - timeOffset); });
+            },
+            getClosest = (values, value, wrap) => {
+              let i = values.length, closest = 1e10, index = 0, d;
+              while (i--) { d = Math.abs(values[i] - value); if (d > wrap / 2) d = wrap - d; if (d < closest) { closest = d; index = i; } }
+              return index;
+            },
+            populateTimeline = () => {
+              let i, item, curX, distanceToStart, distanceToLoop; tl.clear();
+              for (i = 0; i < length; i++) {
+                item = items[i]; curX = xPercents[i] / 100 * widths[i];
+                distanceToStart = item.offsetLeft + curX - startX + spaceBefore[0];
+                distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, "scaleX");
+                tl.to(item, { xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+                  .fromTo(item, { xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100) }, { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false }, distanceToLoop / pixelsPerSecond)
+                  .add("label" + i, distanceToStart / pixelsPerSecond);
+                times[i] = distanceToStart / pixelsPerSecond;
+              }
+              timeWrap = gsap.utils.wrap(0, tl.duration());
+            },
+            refresh = (deep) => {
+              let progress = tl.progress(); tl.progress(0, true);
+              populateWidths(); deep && populateTimeline(); populateOffsets();
+              deep && tl.draggable ? tl.time(times[curIndex], true) : tl.progress(progress, true);
+            },
+            proxy;
+          gsap.set(items, { x: 0 }); populateWidths(); populateTimeline(); populateOffsets();
+          window.addEventListener("resize", () => refresh(true));
+          function toIndex(index, vars) {
+            vars = vars || {};
+            (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length);
+            let newIndex = gsap.utils.wrap(0, length, index), time = times[newIndex];
+            if (time > tl.time() !== index > curIndex && index !== curIndex) time += tl.duration() * (index > curIndex ? 1 : -1);
+            if (time < 0 || time > tl.duration()) vars.modifiers = { time: timeWrap };
+            curIndex = newIndex; vars.overwrite = true;
+            gsap.killTweensOf(proxy);
+            return vars.duration === 0 ? tl.time(timeWrap(time)) : tl.tweenTo(time, vars);
+          }
+          tl.toIndex = (index, vars) => toIndex(index, vars);
+          tl.closestIndex = setCurrent => {
+            let index = getClosest(times, tl.time(), tl.duration());
+            if (setCurrent) { curIndex = index; indexIsDirty = false; }
+            return index;
+          };
+          tl.current = () => indexIsDirty ? tl.closestIndex(true) : curIndex;
+          tl.next = vars => toIndex(tl.current() + 1, vars);
+          tl.previous = vars => toIndex(tl.current() - 1, vars);
+          tl.times = times;
+          tl.progress(1, true).progress(0, true);
+          if (config.reversed) { tl.vars.onReverseComplete(); tl.reverse(); }
+          if (config.draggable && typeof (Draggable) === "function") {
+            proxy = document.createElement("div");
+            let wrap = gsap.utils.wrap(0, 1), ratio, startProgress, draggable, lastSnap, initChangeX, wasPlaying,
+              align = () => tl.progress(wrap(startProgress + (draggable.startX - draggable.x) * ratio)),
+              syncIndex = () => tl.closestIndex(true);
+            draggable = Draggable.create(proxy, {
+              trigger: items[0].parentNode, type: "x",
+              onPressInit() {
+                let x = this.x; gsap.killTweensOf(tl); wasPlaying = !tl.paused();
+                tl.pause(); startProgress = tl.progress(); refresh();
+                ratio = 1 / totalWidth; initChangeX = (startProgress / -ratio) - x;
+                gsap.set(proxy, { x: startProgress / -ratio });
+              },
+              onDrag: align, onThrowUpdate: align, overshootTolerance: 0, inertia: true,
+              snap(value) {
+                if (Math.abs(startProgress / -ratio - this.x) < 10) return lastSnap + initChangeX;
+                let time = -(value * ratio) * tl.duration(), wrappedTime = timeWrap(time),
+                  snapTime = times[getClosest(times, wrappedTime, tl.duration())], dif = snapTime - wrappedTime;
+                Math.abs(dif) > tl.duration() / 2 && (dif += dif < 0 ? tl.duration() : -tl.duration());
+                lastSnap = (time + dif) / tl.duration() / -ratio; return lastSnap;
+              },
+              onRelease() { syncIndex(); draggable.isThrowing && (indexIsDirty = true); },
+              onThrowComplete: () => { syncIndex(); wasPlaying && tl.play(); }
+            })[0];
+            tl.draggable = draggable;
+          }
+          tl.closestIndex(true); lastIndex = curIndex;
+          onChange && onChange(items[curIndex], curIndex);
+          timeline = tl;
+          return () => window.removeEventListener("resize", () => refresh(true));
+        });
+        return timeline;
+      }
+
+      initSlider();
+    });
+
+    /* ── fade in on load ── */
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.6s ease';
+    window.addEventListener('load', () => { document.body.style.opacity = '1'; });
+  </script>
+</body>
+
+</html>
